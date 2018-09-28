@@ -1,0 +1,12 @@
+#articles {
+  display: inline-bock;
+  margin: 10px;
+}
+
+#notes {
+  display: block;
+}
+
+.pageHeader {
+  background: url("/public/assets/img/newspaper-595478_1920.jpg")
+}

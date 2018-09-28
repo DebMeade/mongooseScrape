@@ -25,22 +25,28 @@ mongoose.connect("mongodb://localhost/mongoHeadlines", {useNewUrlParser: true })
 app.get("/scrape", function(req, res) {
   axios.get("https://www.wsj.com/").then(function(response) {
     var $ = cheerio.load(response.data);
+    const articlesData = [];
 
     $("h3").each(function(i, element) {
       var result = {};
 
-      result.title = $(this).children("name").text();
-      result.link = $(this).children().attr("href")
-
-      db.Article.create(result)
-      .then(function(dbArticle) {
-        console.log(dbArticle);
-      })
-      .catch(function(err) {
-        return res.json(err);
-      });
+      result.title = $(this).children("a").text();
+      result.link = $(this).children().attr("href");
+      result.summary = $(".wsj-summary").text();
+      
+      if(i<20) {
+        console.log("trimming articles");
+        articlesData.push(result);
+      }
+      // db.Article.create(result)
+      // .then(function(dbArticle) {
+      //   console.log(dbArticle);
+      // })
+      // .catch(function(err) {
+      //   return res.json(err);
+      // });
     });
-    res.send("WSJ Scrape Complete!");
+    res.json(articlesData);
   });
 });
 
