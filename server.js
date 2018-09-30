@@ -27,12 +27,13 @@ app.get("/scrape", function(req, res) {
     var $ = cheerio.load(response.data);
     const articlesData = [];
 
-    $("h3").each(function(i, element) {
+    $(".wsj-card").each(function(i, element) {
       var result = {};
 
-      result.title = $(this).children("a").text();
-      result.link = $(this).children().attr("href");
-      result.summary = $(".wsj-summary").text();
+      result.title = $(this).children("h3").children("a").text();
+      result.link = $(this).children("h3").children().attr("href");
+      result.summary = $(this).children(".wsj-card-body").children("p").children("span").text();
+      console.log("print", result);
       
       if(i<20) {
         console.log("trimming articles");
@@ -72,17 +73,19 @@ app.get("/articles/:id", function(req, res) {
   });
 });
 
-app.post("/articles/:id", function(req, res) {
-  db.Note.create(req.body)
-  .then(function(dbNote) {
-    return db.Article.findOneAndIpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
-  })
-  .then(function(dbArticle) {
-    res.json(dbArticle);
-  })
-  .catch(function(err) {
-    res.json(err);
-  })
+app.post("/articles", function(req, res) {
+  var articleData = req.body;
+  console.log(articleData);
+  // db.Note.create(req.body)
+  // .then(function(dbNote) {
+  //   return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+  // })
+  // .then(function(dbArticle) {
+  //   res.json(dbArticle);
+  // })
+  // .catch(function(err) {
+  //   res.json(err);
+  // })
 });
 
 app.listen(PORT, function() {
